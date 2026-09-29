@@ -1,26 +1,229 @@
 @import "tailwindcss";
 
+/* Class-based dark mode, same as synovative.vercel.app (`html.dark`). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens copied from synovative.vercel.app (light = :root, dark = .dark).
+ * Fonts: Nunito (body) + Fredoka (display), loaded with next/font in app/layout.tsx.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f6f2ea;
+  --paper-raised: #fffdf8;
+  --paper-sunken: #ebe4d7;
+  --paper-tint: #f1ecf7;
+  --ink: #2a2135;
+  --ink-soft: #5b5169;
+  --ink-faint: #8d84a0;
+  --ink-inverse: #fffdf8;
+  --brand: #5f3ca7;
+  --brand-deep: #452a7c;
+  --brand-soft: #b9a3e0;
+  --brand-wash: #ece5f7;
+  --brand-surface: #5f3ca7;
+  --brand-surface-deep: #452a7c;
+  --on-brand: #fff;
+  --accent: #faac37;
+  --accent-deep: #d98d14;
+  --accent-soft: #fcd08a;
+  --accent-wash: #fdf1dc;
+  --line: #2a21351f;
+  --line-strong: #2a213538;
+  --danger: #c2413a;
+  --lift-sm: 0 1px 1px #2a21350d, 0 2px 4px #2a21350f;
+  --lift-md: 0 1px 2px #2a21350f, 0 6px 14px #2a213517;
+  --lift-lg: 0 2px 4px #2a213512, 0 16px 34px #2a213521;
+  --lift-brand: 0 6px 20px #5f3ca73d;
+  --lift-accent: 0 6px 20px #d98d1447;
+  /* fixed dark base used behind the hero video in both themes (meta theme-color) */
+  --night: #17131f;
+  /* desk doodles */
+  --doodle-paper: #f7f2e8;
+  --doodle-ink: #6b4fc0;
+  --doodle-note: #b9a3e8;
+  --doodle-note-2: #e4dbf7;
+  --doodle-yellow: #fbd46f;
+  --doodle-tape: #ffffff8c;
+  --grain-opacity: 0.5;
+}
+
+.dark {
+  --paper: #17131f;
+  --paper-raised: #231c30;
+  --paper-sunken: #100d16;
+  --paper-tint: #1e1829;
+  --ink: #f3eefa;
+  --ink-soft: #bdb2ce;
+  --ink-faint: #8b7fa0;
+  --ink-inverse: #17131f;
+  --brand: #a482e8;
+  --brand-deep: #8a63dd;
+  --brand-soft: #6b4fa0;
+  --brand-wash: #2b2140;
+  --brand-surface: #2e2150;
+  --brand-surface-deep: #221839;
+  --on-brand: #1b1327;
+  --accent: #ffbc55;
+  --accent-deep: #faac37;
+  --accent-soft: #7a5a1f;
+  --accent-wash: #33280f;
+  --line: #f3eefa24;
+  --line-strong: #f3eefa42;
+  --danger: #f08a7c;
+  --lift-sm: 0 1px 1px #0000004d, 0 2px 4px #00000059;
+  --lift-md: 0 1px 2px #00000059, 0 6px 14px #00000073;
+  --lift-lg: 0 2px 4px #0006, 0 16px 34px #0000008c;
+  --lift-brand: 0 6px 20px #5f3ca773;
+  --lift-accent: 0 6px 20px #faac3738;
+  --doodle-paper: #2a2338;
+  --doodle-ink: #a482e8;
+  --doodle-note: #6b56a8;
+  --doodle-note-2: #3a2f58;
+  --doodle-yellow: #d9a73c;
+  --doodle-tape: #ffffff1f;
+  --grain-opacity: 0.28;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-sunken: var(--paper-sunken);
+  --color-paper-tint: var(--paper-tint);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-inverse: var(--ink-inverse);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-wash: var(--brand-wash);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-surface-deep: var(--brand-surface-deep);
+  --color-on-brand: var(--on-brand);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-wash: var(--accent-wash);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-danger: var(--danger);
+  --color-night: var(--night);
+  --color-doodle-paper: var(--doodle-paper);
+  --color-doodle-ink: var(--doodle-ink);
+  --color-doodle-note: var(--doodle-note);
+  --color-doodle-note-2: var(--doodle-note-2);
+  --color-doodle-yellow: var(--doodle-yellow);
+  --color-doodle-tape: var(--doodle-tape);
+  --font-hand: var(--font-caveat), "Segoe Print", cursive;
+  --animate-sway: sway 6s ease-in-out infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-dash: dash 18s linear infinite;
+  --shadow-lift-sm: var(--lift-sm);
+  --shadow-lift-md: var(--lift-md);
+  --shadow-lift-lg: var(--lift-lg);
+  --shadow-lift-brand: var(--lift-brand);
+  --shadow-lift-accent: var(--lift-accent);
+  --radius-card: 1.25rem;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fredoka), ui-rounded, "Segoe UI", system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important; /* stops infinite loops (button bob, sway, float) */
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+.dark :focus-visible {
+  outline-color: var(--accent);
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+dialog::backdrop {
+  background: rgb(16 13 22 / 0.88);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes sway {
+  0%, 100% { rotate: var(--r, 0deg); }
+  50% { rotate: calc(var(--r, 0deg) + 2deg); }
+}
+@keyframes float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+@keyframes dash {
+  to { stroke-dashoffset: -280; }
+}
+
+/* Paper grain, same idea as the main site's .paper-grain */
+.paper-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: calc(var(--grain-opacity) * 0.35);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.35  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.dark .paper-grain {
+  mix-blend-mode: screen;
+}
+
+/*
+ * Buttons: a slow, minimal, continuous bob (not tied to hover). Uses the `translate` property so it
+ * never fights `transform`/`scale` used elsewhere; the press still scales down slightly.
+ */
+@keyframes btn-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -3px; }
+}
+/* Text-link CTAs: the arrow drifts right and back */
+@keyframes arrow-nudge {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 4px 0; }
+}
+@utility btn-motion {
+  animation: btn-bob 2.33s ease-in-out infinite; /* 20% faster than 2.8s */
+  transition:
+    scale 0.2s ease-out,
+    background-color 0.3s ease-out,
+    color 0.3s ease-out,
+    border-color 0.3s ease-out,
+    box-shadow 0.3s ease-out;
+  &:active {
+    scale: 0.97;
+  }
 }
