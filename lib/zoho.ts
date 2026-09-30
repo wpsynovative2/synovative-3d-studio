@@ -70,7 +70,7 @@ function utmBlock(lead: Record<string, string>) {
   return keys.filter((k) => lead[k]).map((k) => `${k}=${lead[k]}`).join("\n") || undefined;
 }
 
-type ZohoLead = { id: string; Description?: string | null; Interested_Service?: string[] | null };
+type ZohoLead = { id: string; Phone?: string | null; Description?: string | null; Interested_Service?: string[] | null };
 
 async function zoho(path: string, init: RequestInit = {}) {
   const token = await accessToken();
@@ -84,7 +84,7 @@ async function zoho(path: string, init: RequestInit = {}) {
 
 async function findByMobile(mobile: string): Promise<ZohoLead | null> {
   const digits = mobile.replace(/\D/g, "").slice(-10);
-  const res = await zoho(`/Leads/search?phone=${digits}&fields=id,Description,Interested_Service`);
+  const res = await zoho(`/Leads/search?phone=${digits}&fields=id,Phone,Description,Interested_Service`);
   if (res.status === 204) return null; // no match
   const data = await res.json();
   if (!res.ok) throw new Error(`Zoho search failed: ${JSON.stringify(data)}`);
@@ -129,7 +129,7 @@ export async function createZohoLead(lead: Record<string, string>) {
   // if that record really holds this enquiry's Lead ID, so a forged id can't touch other leads.
   let existing: ZohoLead | null = null;
   if (/^\d{10,25}$/.test(lead.zoho_id || "")) {
-    const res = await zoho(`/Leads/${lead.zoho_id}?fields=id,Description,Interested_Service`);
+    const res = await zoho(`/Leads/${lead.zoho_id}?fields=id,Phone,Description,Interested_Service`);
     const rec: ZohoLead | undefined = res.ok ? (await res.json())?.data?.[0] : undefined;
     if (rec?.Description?.includes(`Lead ID: ${lead.event_id}`)) existing = rec;
   }
@@ -163,6 +163,7 @@ export async function createZohoLead(lead: Record<string, string>) {
     Description: description,
     Interested_Service: services,
     ...(sameEnquiry && lead.company ? { Company: lead.company } : {}),
+    ...(!existing.Phone && { Phone: lead.mobile }), // older leads kept the number in Mobile only
     ...details,
   });
 }
