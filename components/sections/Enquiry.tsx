@@ -1,6 +1,6 @@
 "use client";
 
-import { site, telHref, whatsappHref } from "@/content/site";
+import { formatPhone, site, telHref, whatsappHref } from "@/content/site";
 import { trackCall, trackWhatsApp } from "@/lib/tracking";
 import { LeadForm } from "@/components/form/LeadForm";
 import { ROOM_CLIPS, VideoPolaroid } from "@/components/doodles/VideoTiles";
@@ -12,7 +12,7 @@ export function Enquiry() {
     site.phone && {
       icon: <PhoneIcon />,
       label: "Call",
-      value: site.phone,
+      value: formatPhone(),
       href: telHref(),
       onClick: () => trackCall("enquiry"),
     },

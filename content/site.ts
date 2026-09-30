@@ -28,13 +28,25 @@ export const site = {
   ogImage: "",
 };
 
+/** Digits with country code; a bare 10-digit Indian number gets 91 prepended. */
+function intlDigits(phone: string) {
+  const d = phone.replace(/\D/g, "").replace(/^0(?=\d{10}$)/, "");
+  return d.length === 10 ? `91${d}` : d;
+}
+
 export function telHref(phone = site.phone) {
-  return phone ? `tel:${phone.replace(/[^\d+]/g, "")}` : "#enquiry";
+  return phone ? `tel:+${intlDigits(phone)}` : "#enquiry";
 }
 
 export function whatsappHref(message: string = site.whatsappMessage) {
-  const n = site.whatsapp.replace(/\D/g, "");
+  const n = intlDigits(site.whatsapp);
   return n
     ? `https://wa.me/${n}?text=${encodeURIComponent(message)}`
     : "#enquiry";
+}
+
+/** "9673439102" → "+91 96734 39102" for display. */
+export function formatPhone(phone = site.phone) {
+  const d = intlDigits(phone);
+  return d.length === 12 && d.startsWith("91") ? `+91 ${d.slice(2, 7)} ${d.slice(7)}` : phone;
 }

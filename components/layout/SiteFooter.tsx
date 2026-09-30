@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site, telHref } from "@/content/site";
+import { formatPhone, site, telHref } from "@/content/site";
 import { Logo } from "./Logo";
 
 export function SiteFooter() {
@@ -21,7 +21,7 @@ export function SiteFooter() {
             {site.phone && (
               <li>
                 <a href={telHref()} className="transition-colors hover:text-accent">
-                  {site.phone}
+                  {formatPhone()}
                 </a>
               </li>
             )}

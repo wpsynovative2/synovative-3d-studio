@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { site, telHref } from "@/content/site";
+import { formatPhone, site, telHref } from "@/content/site";
 import { trackCall } from "@/lib/tracking";
 import { CtaLink } from "@/components/ui/CtaLink";
 import { PhoneIcon } from "@/components/ui/icons";
@@ -68,7 +68,7 @@ export function SiteHeader() {
               className={`hidden items-center gap-2 text-sm font-semibold lg:flex ${onDark ? "text-white" : "text-ink"}`}
             >
               <PhoneIcon width={16} height={16} className={onDark ? "text-[#b9a3e0]" : "text-brand"} />
-              {site.phone}
+              {formatPhone()}
             </a>
           )}
           <ThemeToggle />

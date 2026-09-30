@@ -2,7 +2,7 @@ import { after } from "next/server";
 import { fieldErrors, leadRequestSchema } from "@/lib/schema";
 import { appendLeadToSheet } from "@/lib/gsheet";
 import { createZohoLead } from "@/lib/zoho";
-import { emailLeadToSales, notifySales } from "@/lib/notify";
+import { emailLeadToSales, notifyLead, notifySales } from "@/lib/notify";
 import { rateLimited, verifyTurnstile } from "@/lib/spam";
 
 export async function POST(request: Request) {
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     } else if (sheet.status === "rejected" || zoho.status === "rejected") {
       await emailLeadToSales(lead, sheet.status === "rejected" ? "SHEET_FAILED" : "ZOHO_FAILED");
     }
-    await notifySales(lead);
+    await Promise.all([notifySales(lead), notifyLead(lead)]);
   });
 
   if (sheet.status === "rejected" && zoho.status === "rejected") {
@@ -62,5 +62,7 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
-  return Response.json({ ok: true });
+  // Step 1 hands the new Zoho record id back so step 2 updates it instead of creating a duplicate.
+  const zohoId = zoho.status === "fulfilled" ? (zoho.value?.details?.id as string | undefined) : undefined;
+  return Response.json({ ok: true, ...(zohoId && { zoho_id: zohoId }) });
 }

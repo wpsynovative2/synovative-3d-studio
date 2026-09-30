@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { fieldErrors, stepOneSchema, stepTwoSchema } from "@/lib/schema";
+import { UNSERVED_ROLES, fieldErrors, stepOneSchema, stepTwoSchema, type Role } from "@/lib/schema";
 import { newEventId, track } from "@/lib/tracking";
 import { captureAttribution, metaIds, type Attribution } from "@/lib/utm";
 import { buttonClass } from "@/components/ui/Button";
@@ -13,28 +13,26 @@ import { StepOne } from "./StepOne";
 import { StepTwo } from "./StepTwo";
 
 export type FormValues = {
+  role: string;
+  other_business: string;
   name: string;
   mobile: string;
   project_type: string;
   email: string;
   company: string;
-  role: string;
   project_location: string;
-  project_stage: string;
-  project_size: string;
   message: string;
 };
 
 const EMPTY: FormValues = {
+  role: "",
+  other_business: "",
   name: "",
   mobile: "",
   project_type: "",
   email: "",
   company: "",
-  role: "",
   project_location: "",
-  project_stage: "",
-  project_size: "",
   message: "",
 };
 
@@ -63,6 +61,7 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
   const [honeypot, setHoneypot] = useState("");
 
   const eventId = useRef("");
+  const zohoId = useRef(""); // CRM record created by step 1, so step 2 updates it
   const attribution = useRef<Attribution | null>(null);
   const turnstileToken = useRef("");
   const turnstileWidget = useRef<string | undefined>(undefined);
@@ -94,11 +93,19 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
       });
   };
 
+  const unserved = UNSERVED_ROLES.includes(values.role as Role);
+
   const payload = (status: "Partial" | "Complete") => {
     const attr = attribution.current ?? captureAttribution();
     const body = {
       ...(status === "Partial"
-        ? { name: values.name, mobile: values.mobile, project_type: values.project_type }
+        ? {
+            role: values.role,
+            other_business: values.other_business,
+            name: values.name,
+            mobile: values.mobile,
+            project_type: values.project_type,
+          }
         : values),
       status,
       event_id: eventId.current,
@@ -108,6 +115,7 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
       ...metaIds(attr.fbclid),
       website: honeypot,
       turnstile_token: turnstileToken.current,
+      zoho_id: zohoId.current,
     };
     // Turnstile tokens are single-use: get a fresh one for the next request.
     if (turnstileWidget.current) {
@@ -135,9 +143,14 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
     track("form_start", { project_type: values.project_type, event_id: eventId.current });
     track("LeadStart", { project_type: values.project_type });
     // Save step 1 as a partial lead so abandoned step-2 users can still be called.
-    post(payload("Partial")).catch(() => {});
+    post(payload("Partial"))
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.zoho_id) zohoId.current = d.zoho_id;
+      })
+      .catch(() => {});
     setStep(2);
-    requestAnimationFrame(() => document.getElementById(`${idPrefix}-email`)?.focus());
+    requestAnimationFrame(() => document.getElementById(`${idPrefix}-company`)?.focus());
   };
 
   const submit = async (e: FormEvent) => {
@@ -232,6 +245,8 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
         </p>
       )}
 
+      {/* Unserved business types: StepOne shows the explanation, and there's nothing to submit */}
+      {!(step === 1 && unserved) && (
       <div className="mt-6 flex flex-wrap items-center gap-3">
         {step === 2 && (
           <button type="button" onClick={() => setStep(1)} className={buttonClass("ghost", "md")}>
@@ -250,7 +265,8 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
           )}
         </button>
       </div>
-      <p className="mt-4 text-xs text-ink-faint">
+      )}
+      <p className={`mt-4 text-xs text-ink-faint ${step === 1 && unserved ? "hidden" : ""}`}>
         We&apos;ll call you within one working day. Your details are used only to respond to this enquiry — see our{" "}
         <a href="/privacy" className="underline hover:text-brand">
           privacy policy

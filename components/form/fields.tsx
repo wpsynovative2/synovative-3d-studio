@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { ChevronDownIcon } from "@/components/ui/icons";
 
 const control =
   "w-full rounded-xl border bg-paper px-4 py-3 text-ink placeholder:text-ink-faint transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25";
@@ -71,11 +72,12 @@ export function Select({
   ...rest
 }: Common & SelectHTMLAttributes<HTMLSelectElement> & { options: readonly string[]; placeholder?: string }) {
   return (
+    <div className="relative">
     <select
       id={id}
       aria-invalid={!!error}
       aria-describedby={describedBy({ id, error, hint })}
-      className={`${control} ${border(error)} appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%238d84a0%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:18px] bg-[right_1rem_center] bg-no-repeat pr-11 ${className}`}
+      className={`${control} ${border(error)} cursor-pointer appearance-none pr-11 ${className}`}
       {...rest}
     >
       <option value="">{placeholder}</option>
@@ -85,6 +87,12 @@ export function Select({
         </option>
       ))}
     </select>
+      <ChevronDownIcon
+        width={18}
+        height={18}
+        className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink-soft"
+      />
+    </div>
   );
 }
 

@@ -3,13 +3,20 @@ import { PROJECT_TYPES } from "@/content/segments";
 
 // Shared by the client form and POST /api/lead.
 
-export const ROLES = ["Developer", "Architect", "Channel partner", "Marketing agency", "Other"] as const;
-export const STAGES = ["Pre-launch", "Under construction", "Ready"] as const;
-export const SIZES = ["< 1 tower", "2–5 towers", "Township", "Single villa", "Other"] as const;
+export const ROLES = [
+  "Real estate developer",
+  "Architect",
+  "Channel partner",
+  "Contractor",
+  "Marketing agency",
+  "Other",
+] as const;
+export type Role = (typeof ROLES)[number];
+
+/** Business types we don't take on right now — the form explains and hides the submit button. */
+export const UNSERVED_ROLES: readonly Role[] = ["Channel partner", "Contractor"];
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().default("");
-const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) =>
-  z.union([z.enum(values), z.literal("")]).optional().default("");
 
 // Accepts 98765 43210, 09876543210, +91 98765 43210 → normalised to +919876543210.
 export const mobileSchema = z
@@ -19,19 +26,28 @@ export const mobileSchema = z
   .pipe(z.string().regex(/^[6-9]\d{9}$/, "Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9"))
   .transform((v) => `+91${v}`);
 
-export const stepOneSchema = z.object({
+const stepOneBase = z.object({
+  role: z.enum(ROLES, { error: "Choose your business" }),
+  other_business: optionalText(150), // required when role is "Other"
   name: z.string().trim().min(2, "Enter your name").max(100),
   mobile: mobileSchema,
   project_type: z.enum(PROJECT_TYPES, { error: "Choose a project type" }),
 });
 
+// Applied to every schema that contains step 1 (refined schemas can't be .extend()ed in Zod 4).
+function checkRole(v: { role: Role; other_business: string }, ctx: z.RefinementCtx) {
+  if (UNSERVED_ROLES.includes(v.role))
+    ctx.addIssue({ code: "custom", path: ["role"], message: `We're not taking on ${v.role.toLowerCase()} projects right now.` });
+  if (v.role === "Other" && v.other_business.length < 2)
+    ctx.addIssue({ code: "custom", path: ["other_business"], message: "Tell us what your business does" });
+}
+
+export const stepOneSchema = stepOneBase.superRefine(checkRole);
+
 export const stepTwoSchema = z.object({
-  email: z.email("Enter a valid email, e.g. name@company.com").max(200),
-  company: z.string().trim().min(2, "Enter your company or developer name").max(150),
-  role: z.enum(ROLES, { error: "Tell us who you are" }),
+  email: z.union([z.email("Enter a valid email, e.g. name@company.com").max(200), z.literal("")]).optional().default(""),
+  company: z.string().trim().min(2, "Enter your company, developer or project name").max(150),
   project_location: optionalText(150),
-  project_stage: optionalEnum(STAGES),
-  project_size: optionalEnum(SIZES),
   message: optionalText(2000),
 });
 
@@ -48,6 +64,7 @@ export const trackingSchema = z.object({
   gclid: optionalText(500),
   _fbp: optionalText(200),
   _fbc: optionalText(500),
+  zoho_id: optionalText(25), // returned by step 1, sent back with step 2
 });
 
 const antiSpam = z.object({
@@ -55,16 +72,18 @@ const antiSpam = z.object({
   turnstile_token: z.string().optional().default(""),
 });
 
-export const partialLeadSchema = stepOneSchema
+export const partialLeadSchema = stepOneBase
   .extend(trackingSchema.shape)
   .extend(antiSpam.shape)
-  .extend({ status: z.literal("Partial") });
+  .extend({ status: z.literal("Partial") })
+  .superRefine(checkRole);
 
-export const completeLeadSchema = stepOneSchema
+export const completeLeadSchema = stepOneBase
   .extend(stepTwoSchema.shape)
   .extend(trackingSchema.shape)
   .extend(antiSpam.shape)
-  .extend({ status: z.literal("Complete") });
+  .extend({ status: z.literal("Complete") })
+  .superRefine(checkRole);
 
 export const leadRequestSchema = z.discriminatedUnion("status", [partialLeadSchema, completeLeadSchema]);
 

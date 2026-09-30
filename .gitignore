@@ -43,3 +43,6 @@ next-env.d.ts
 
 # assets
 public/videos/assets
+
+# Zoho OAuth download (contains client secret)
+self_client*.json

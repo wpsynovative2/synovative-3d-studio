@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site, telHref, whatsappHref } from "@/content/site";
+import { formatPhone, site, telHref, whatsappHref } from "@/content/site";
 import { ThankYouTracker } from "@/components/ThankYouTracker";
 import { Logo } from "@/components/layout/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -70,7 +70,7 @@ export default function ThankYouPage() {
           )}
           {site.phone && (
             <a href={telHref()} className={buttonClass("secondary")}>
-              Call {site.phone}
+              Call {formatPhone()}
             </a>
           )}
           <Link href="/#work" className={buttonClass("ghost")}>
