@@ -33,7 +33,7 @@ export function StepOne({
         <div role="status" className="rounded-xl border border-line bg-accent-wash p-4 text-sm text-ink">
           <p className="font-display font-semibold">We&apos;re not taking on {values.role.toLowerCase()} projects right now.</p>
           <p className="mt-1 text-ink-soft">
-            Our studio is currently focused on developers, architects and brands. Thanks for thinking of us, and do
+            Thanks for thinking of us, and do
             check back later.
           </p>
         </div>
