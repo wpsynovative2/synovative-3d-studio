@@ -24,7 +24,8 @@ export const segments: Segment[] = [
     slug: "residential",
     title: "Residential projects",
     projectType: "Residential",
-    pitch: "Show buyers the flat, the view and the amenities before possession.",
+    pitch:
+      "Show buyers the flat, the view and the amenities before possession.",
     cta: "Get Your Residential Project Live",
     poster: "/videos/web/card-residential.jpg",
     clip: "/videos/web/card-residential-full.mp4",
@@ -66,10 +67,11 @@ export const segments: Segment[] = [
     clip: "/videos/web/card-township-full.mp4",
   },
   {
-    slug: "interiors",
-    title: "Hospitality & interiors",
+    slug: "Interiors",
+    title: "interiors",
     projectType: "Interiors",
-    pitch: "Hotels, clubhouses and show-flat interiors, lit and styled to sell.",
+    pitch:
+      "Hotels, clubhouses and show-flat interiors, lit and styled to sell.",
     cta: "Get Your Interior Walkthrough",
     poster: "/videos/web/lounge.jpg",
     clip: "/videos/web/card-interiors-full.mp4",
