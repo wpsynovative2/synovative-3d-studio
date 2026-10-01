@@ -67,8 +67,8 @@ export const segments: Segment[] = [
     clip: "/videos/web/card-township-full.mp4",
   },
   {
-    slug: "Interiors",
-    title: "interiors",
+    slug: "interiors",
+    title: "Interiors",
     projectType: "Interiors",
     pitch:
       "Hotels, clubhouses and show-flat interiors, lit and styled to sell.",
