@@ -267,7 +267,7 @@ export function LeadForm({ idPrefix = "lead" }: { idPrefix?: string }) {
       </div>
       )}
       <p className={`mt-4 text-xs text-ink-faint ${step === 1 && unserved ? "hidden" : ""}`}>
-        We&apos;ll call you within one working day. Your details are used only to respond to this enquiry — see our{" "}
+        We&apos;ll call you within one working day. Your details are used only to respond to this enquiry. See our{" "}
         <a href="/privacy" className="underline hover:text-brand">
           privacy policy
         </a>
