@@ -14,7 +14,7 @@ export function ProjectTypes({ segments }: { segments: Segment[] }) {
       id="projects"
       eyebrow="Project types"
       title="Whatever you're launching, buyers see it finished."
-      intro="Each film is planned around who you're selling to — home buyers, tenants, investors or approval boards."
+      intro="Each film is planned around who you're selling to home buyers, tenants, investors or approval boards."
       aside={
         <div className="relative h-44 w-80 xl:w-[38rem]">
           <VideoPolaroid clip={ROOM_CLIPS.bedroom} className="absolute -top-12 left-0 hidden w-56 -rotate-3 xl:block" />

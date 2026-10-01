@@ -6,7 +6,7 @@ import { ROOM_CLIPS, VideoPolaroid } from "@/components/doodles/VideoTiles";
 const OUTCOMES = [
   {
     title: "Sell before construction",
-    body: "Pre-launch and under-construction buyers see the finished project — the lobby, the view from the 22nd floor, the clubhouse at dusk.",
+    body: "Pre-launch and under-construction buyers see the finished project the lobby, the view from the 22nd floor, the clubhouse at dusk.",
   },
   {
     title: "Convert more site visits",
