@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Fredoka, Nunito } from "next/font/google";
-import Script from "next/script";
 import { site } from "@/content/site";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -11,7 +10,7 @@ const fredoka = Fredoka({ variable: "--font-fredoka", subsets: ["latin"], displa
 // Handwriting for doodles / sticky notes (the main site uses Caveat too).
 const caveat = Caveat({ variable: "--font-caveat", subsets: ["latin"], display: "swap" });
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-M5BTLK29";
 // First-party sGTM host (e.g. https://track.synovative3dstudio.in); falls back to Google.
 const GTM_HOST = process.env.NEXT_PUBLIC_SGTM_URL || "https://www.googletagmanager.com";
 
@@ -45,23 +44,23 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Applies the saved / OS theme before first paint (no flash) */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='${GTM_HOST}/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`,
+          }}
+        />
       </head>
       <body className="min-h-dvh">
-        {GTM_ID && (
-          <>
-            <Script id="gtm" strategy="afterInteractive">
-              {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='${GTM_HOST}/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
-            </Script>
-            <noscript>
-              <iframe
-                src={`${GTM_HOST}/ns.html?id=${GTM_ID}`}
-                height="0"
-                width="0"
-                style={{ display: "none", visibility: "hidden" }}
-              />
-            </noscript>
-          </>
-        )}
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`${GTM_HOST}/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         {children}
         <div aria-hidden className="paper-grain" />
       </body>
